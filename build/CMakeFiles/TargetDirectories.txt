@@ -1,3 +1,0 @@
-/home/marc/Documents/dev/VulkanTest/build/CMakeFiles/edit_cache.dir
-/home/marc/Documents/dev/VulkanTest/build/CMakeFiles/rebuild_cache.dir
-/home/marc/Documents/dev/VulkanTest/build/CMakeFiles/VulkanTest.dir

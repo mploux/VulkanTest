@@ -1,1 +1,0 @@
-/usr/bin/c++      CMakeFiles/VulkanTest.dir/srcs/main.cpp.o  -o VulkanTest 
