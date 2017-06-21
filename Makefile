@@ -1,16 +1,19 @@
 NAME = VulkanTest
 CC = g++
-FILES = main.cpp
+FILES =\
+vulkan_system/validation_layers.cpp\
+main.cpp
 
-OBJS = $(addprefix bin/,$(FILES:.cpp=.o))
+SRC = srcs/
 BIN = bin
+OBJS = $(addprefix $(BIN)/,$(FILES:.cpp=.o))
 
 VULKAN_SDK_PATH = ~/VulkanSDK/1.0.51.0/x86_64
 VULKAN_SDK_INCLUDES = $(VULKAN_SDK_PATH)/include
 VULKAN_SDK_LIBS = $(VULKAN_SDK_PATH)/lib
 
 DEPS = -L $(VULKAN_SDK_LIBS)
-INCLUDES = -I $(VULKAN_SDK_INCLUDES)
+INCLUDES = -I includes/ -I $(VULKAN_SDK_INCLUDES)
 
 CXXFLAGS = -std=c++11
 FLAGS = $(CXXFLAGS) $(INCLUDES)
@@ -25,7 +28,7 @@ all: $(NAME)
 $(BIN):
 	mkdir -p $(dir $(OBJS))
 
-bin/%.o: srcs/%.cpp
+$(BIN)/%.o: $(SRC)%.cpp
 	$(CC) $(CXXFLAGS) -c $^ -o $@ $(INCLUDES)
 
 test: all
