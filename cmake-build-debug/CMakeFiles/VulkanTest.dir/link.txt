@@ -1,1 +1,0 @@
-/usr/bin/c++   -std=c++11 -g   CMakeFiles/VulkanTest.dir/srcs/main.cpp.o CMakeFiles/VulkanTest.dir/srcs/vulkan_system/vulkan_instance.cpp.o CMakeFiles/VulkanTest.dir/srcs/vulkan_system/validation_layers.cpp.o CMakeFiles/VulkanTest.dir/srcs/game.cpp.o  -o VulkanTest -lvulkan -lglfw3 
