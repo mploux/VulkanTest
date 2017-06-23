@@ -2,9 +2,11 @@ cmake_minimum_required(VERSION 3.5.1)
 project(VulkanTest)
 
 set(CMAKE_CXX_FLAGS "-std=c++11")
+set(CMAKE_CXX_LINK_EXECUTABLE "${CMAKE_CXX_LINK_EXECUTABLE}")
 
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(GLFW3 REQUIRED glfw3)
+set(VULKAN_SDK_PATH "$ENV{HOME}/VulkanSDK/1.0.51.0/x86_64")
+set(VULKAN_SDK_LIBS "${VULKAN_SDK_PATH}/lib/")
+set(VULKAN_SDK_INCLUDES "${VULKAN_SDK_PATH}/include")
 
 add_executable(
         VulkanTest
@@ -14,11 +16,10 @@ add_executable(
         srcs/game.cpp
         includes/vulkan_system/utils.h)
 
-set(VULKAN_SDK_PATH ~/VulkanSDK/1.0.51.0/x86_64)
-set(VULKAN_SDK_LIBS ${VULKAN_SDK_PATH}/lib)
-set(VULKAN_SDK_INCLUDES ${VULKAN_SDK_PATH}/include)
+add_library(vulkan SHARED IMPORTED)
+set_property(TARGET vulkan PROPERTY IMPORTED_LOCATION ${VULKAN_SDK_LIBS}/libvulkan.so)
 
-link_directories(${VULKAN_SDK_LIBS})
+
 include_directories(includes/ ${VULKAN_SDK_INCLUDES} ${GLFW3_INCLUDE_DIRS})
 
-target_link_libraries(VulkanTest vulkan ${GLFW3_LIBRARIES})
+target_link_libraries(VulkanTest vulkan glfw3)

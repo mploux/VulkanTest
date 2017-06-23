@@ -2,7 +2,17 @@
 // Created by marc on 21/06/17.
 //
 
-#include "vulkan_system/validation_layers.h"
+#include "validation_layers.h"
+
+ValidationLayers::ValidationLayers()
+{
+
+}
+
+ValidationLayers::~ValidationLayers()
+{
+
+}
 
 bool ValidationLayers::checkValidationLayerSupport()
 {
@@ -29,14 +39,16 @@ bool ValidationLayers::checkValidationLayerSupport()
 
 std::vector<const char*> ValidationLayers::getRequiredExtensions()
 {
-	std::vector<const char*> result;
-	unsigned int glfwExtensionCount = 0;
-	const char** glfwExtensions;
+	std::vector<const char*>	result;
+	unsigned int				glfwExtensionCount = 0;
+	const char					**glfwExtensions;
 
 	glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
 	for (unsigned int i = 0; i < glfwExtensionCount; i++)
-	    result.push_back(glfwExtensions[i]);
+	{
+		result.push_back(glfwExtensions[i]);
+	}
 	if (ENABLE_VALIDATION_LAYERS)
-	    result.push_back(VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
+		result.push_back(VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
 	return result;
 }

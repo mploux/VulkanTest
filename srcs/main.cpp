@@ -7,7 +7,7 @@
 
 #include <iostream>
 #include <cstring>
-#include <game.h>
+#include "game.h"
 
 #include "vulkan_system/validation_layers.h"
 #include "vulkan_system/utils.h"
@@ -27,9 +27,9 @@ bool loop(GLFWwindow *win)
 	return (true);
 }
 
-int main() {
+int main()
+{
 	GLFWwindow	*window = createWindow("Vulkan test", 1280, 720);
-	printVulkanExtensions();
 	Game game = Game();
 
 	while(!glfwWindowShouldClose(window) && loop(window));

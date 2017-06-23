@@ -2,7 +2,7 @@
 // Created by marc on 21/06/17.
 //
 
-#include "vulkan_system/vulkan_instance.h"
+#include "vulkan_instance.h"
 
 VulkanInstance::VulkanInstance(ValidationLayers layers):
 		m_layers{layers}
@@ -32,12 +32,14 @@ VulkanInstance::VulkanInstance(ValidationLayers layers):
 
 	if (ENABLE_VALIDATION_LAYERS)
 	{
-		instanceInfo.enabledLayerCount = static_cast<uint32_t>(m_layers.getLayers().size());
-		instanceInfo.ppEnabledLayerNames = m_layers.getLayers().data();
+		std::vector<const char *> extensions = m_layers.getRequiredExtensions();
+		for (int i = 0; i < extensions.size(); i++)
+			std::cerr << extensions[i] << std::endl;
+		instanceInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
+		instanceInfo.ppEnabledExtensionNames = extensions.data();
 	}
 	else
 		instanceInfo.enabledLayerCount = 0;
-
 	if (vkCreateInstance(&instanceInfo, nullptr, &m_instance) != VK_SUCCESS)
 		throw std::runtime_error("failed to create vulkan instance !");
 }
