@@ -164,13 +164,13 @@ VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR> avail
 
 VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities)
 {
-    if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max())
-        return capabilities.currentExtent;
+	if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max())
+		return capabilities.currentExtent;
 
-    VkExtent2D actualExtent = {1280, 720}; //TODO: handle proper resolution
-    actualExtent.width = std::max(capabilities.minImageExtent.width, std::min(capabilities.maxImageExtent.width, actualExtent.width));
-    actualExtent.height = std::max(capabilities.minImageExtent.height, std::min(capabilities.maxImageExtent.height, actualExtent.height));
-    return actualExtent;
+	VkExtent2D actualExtent = {1280, 720}; //TODO: handle proper resolution
+	actualExtent.width = std::max(capabilities.minImageExtent.width, std::min(capabilities.maxImageExtent.width, actualExtent.width));
+	actualExtent.height = std::max(capabilities.minImageExtent.height, std::min(capabilities.maxImageExtent.height, actualExtent.height));
+	return actualExtent;
 }
 
 bool checkDeviceExtensionSupport(VkPhysicalDevice device, std::vector<const char *> deviceExtensions)
@@ -202,17 +202,47 @@ bool checkValidationLayerSupport(std::vector<const char *> layers)
 		bool layerFound = false;
 		for (const auto& layerProperties : availableLayers)
 		{
-			std::cout << layerName << "     " << layerProperties.layerName << std::endl;
+			std::cout << layerProperties.layerName << std::endl;
 			if (strcmp(layerName, layerProperties.layerName) == 0)
 			{
 				layerFound = true;
-				break;
 			}
 		}
 		if (!layerFound)
 			return false;
 	}
 	return true;
+}
+
+VkShaderModule createShaderModule(VulkanInstance *instance, const std::vector<char>& code)
+{
+	VkShaderModule shaderModule;
+
+	VkShaderModuleCreateInfo shaderInfo = {};
+	shaderInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+	shaderInfo.codeSize = code.size();
+	shaderInfo.pCode = reinterpret_cast<const uint32_t*>(code.data());
+
+	if (vkCreateShaderModule(instance->getDevice(), &shaderInfo, nullptr, &shaderModule) != VK_SUCCESS)
+	    throw std::runtime_error("Vulkan failed to create shader module!");
+}
+
+std::vector<char> readFile(const std::string &filename)
+{
+	std::ifstream file(filename, std::ios::ate | std::ios::binary);
+
+	if (!file.is_open())
+		throw std::runtime_error("failed to open file!");
+
+	size_t fileSize = (size_t) file.tellg();
+	std::vector<char> buffer(fileSize);
+
+	file.seekg(0);
+	file.read(buffer.data(), fileSize);
+
+	file.close();
+
+	return buffer;
 }
 
 const char*				getVulkanResult(VkResult code)

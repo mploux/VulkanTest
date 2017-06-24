@@ -9,6 +9,7 @@
 #include <GLFW/glfw3.h>
 #include <vector>
 #include <iostream>
+#include <fstream>
 #include <cstring>
 #include <algorithm>
 
@@ -29,9 +30,9 @@ typedef struct					_VulkanQueueFamilyIndices
 
 typedef struct					_SwapChainSupportDetails
 {
-    VkSurfaceCapabilitiesKHR 		capabilities;
-    std::vector<VkSurfaceFormatKHR> formats;
-    std::vector<VkPresentModeKHR> 	presentModes;
+	VkSurfaceCapabilitiesKHR 		capabilities;
+	std::vector<VkSurfaceFormatKHR> formats;
+	std::vector<VkPresentModeKHR> 	presentModes;
 }								SwapChainSupportDetails;
 
 void 							printVulkanExtensions();
@@ -50,8 +51,11 @@ VkExtent2D						chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
 
 const char*						getVulkanResult(VkResult code);
 
-static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugReportFlagsEXT flags, VkDebugReportObjectTypeEXT objType, uint64_t obj, size_t location, int32_t code, const char* layerPrefix, const char* msg, void* userData)
-{
-	std::cerr << "Vulkan validation layer: " << msg << std::endl;
+VkShaderModule					createShaderModule(VulkanInstance *instance, const std::vector<char>& code);
+
+std::vector<char>				readFile(const std::string &filename);
+
+static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugReportFlagsEXT flags, VkDebugReportObjectTypeEXT objType, uint64_t obj, size_t location, int32_t code, const char* layerPrefix, const char* msg, void* userData) {
+	std::cerr << "validation layer: " << msg << std::endl;
 	return VK_FALSE;
 }

@@ -35,6 +35,17 @@ private:
 	VkFormat						m_swapChainImageFormat;
 	VkExtent2D						m_swapChainExtent;
 	std::vector<VkImageView> 		m_swapChainImageViews;
+	std::vector<VkFramebuffer>		m_swapChainFramebuffers;
+
+	VkCommandPool 					m_commandPool;
+	std::vector<VkCommandBuffer> 	m_commandBuffers;
+
+	VkRenderPass					m_renderPass;
+	VkPipeline						m_graphicsPipeline;
+	VkPipelineLayout				m_pipelineLayout;
+
+	VkSemaphore						m_imageAvailableSemaphore;
+	VkSemaphore						m_renderFinishedSemaphore;
 
 	std::vector<const char *>		m_validationLayers;
 	std::vector<const char *> 		m_deviceExtensions;
@@ -50,6 +61,12 @@ public:
 	void createSwapChain();
 	void createImageViews();
 	void createGraphicsPipeline();
+	void createRenderPass();
+	void createFramebuffers();
+	void createCommandPool();
+	void createCommandBuffers();
+	void createSemaphores();
+	void drawFrame();
 
 	inline VkInstance getInstance() { return (m_instance); }
 	inline VkSurfaceKHR getSurface() { return (m_surface); }
