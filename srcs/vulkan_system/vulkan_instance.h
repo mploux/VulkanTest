@@ -4,25 +4,49 @@
 
 #pragma once
 
+#ifdef DEBUG
+# define ENABLE_VALIDATION_LAYERS 1
+#else
+# define ENABLE_VALIDATION_LAYERS 0
+#endif
+
 #include <vulkan/vulkan.h>
 #include <GLFW/glfw3.h>
-#include "validation_layers.h"
+
+#include <set>
+
 #include "utils.h"
 
 class VulkanInstance
 {
 private:
-	VkInstance					m_instance;
-	VkDebugReportCallbackEXT	m_callback;
-	ValidationLayers			m_layers;
+	VkInstance						m_instance;
+	VkDebugReportCallbackEXT		m_callback;
+	VkSurfaceKHR					m_surface;
 
-	void init();
-	void initDebugCallbacks();
+	VkPhysicalDevice				m_physicalDevice;
+	VkDevice						m_device;
+
+	VkQueue							m_graphicsQueue;
+	VkQueue							m_presentQueue;
+
+	std::vector<const char *>		m_validationLayers;
+	std::vector<const char *> 		m_deviceExtensions;
 
 public:
-	VulkanInstance(ValidationLayers layers);
+	VulkanInstance(std::vector<const char *> layers, std::vector<const char *> extensions);
 	~VulkanInstance();
 
+	void initDebugCallbacks();
+	void initWindowSurface(GLFWwindow *window);
+	void initPhysicalDevices();
+	void createLogicalDevices(float priority);
+
 	inline VkInstance getInstance() { return (m_instance); }
-	inline ValidationLayers getValidationLayers() { return (m_layers); }
+	inline VkSurfaceKHR getSurface() { return (m_surface); }
+	inline VkPhysicalDevice getPhysicalDevice() { return (m_physicalDevice); }
+	inline VkDevice getDevice() { return (m_device); }
+
+	inline std::vector<const char *> getValidationLayers() { return (m_validationLayers); }
+	inline std::vector<const char *> getDeviceExtensions() { return (m_deviceExtensions); }
 };

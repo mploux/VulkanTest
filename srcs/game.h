@@ -5,15 +5,14 @@
 #pragma once
 
 #include "vulkan_system/vulkan_instance.h"
-#include "vulkan_system/validation_layers.h"
 
 class Game
 {
 private:
-	VulkanInstance *m_vulkan;
+	VulkanInstance	*m_vulkan;
 
 public:
-	Game();
+	Game(GLFWwindow *window);
 	~Game();
 
 	void update();

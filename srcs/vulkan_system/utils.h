@@ -9,8 +9,22 @@
 #include <GLFW/glfw3.h>
 #include <vector>
 #include <iostream>
+#include <cstring>
 
-#include "validation_layers.h"
+#include "vulkan_instance.h"
+
+class VulkanInstance;
+
+typedef struct	_VulkanQueueFamilyIndices
+{
+	int graphicsFamily = -1;
+	int presentFamily = -1;
+
+	bool isComplete()
+	{
+		return graphicsFamily >= 0 && presentFamily >= 0;
+	}
+}				VulkanQueueFamilyIndices;
 
 static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
 	VkDebugReportFlagsEXT flags,
@@ -36,6 +50,12 @@ void DestroyDebugReportCallbackEXT(
 	const VkAllocationCallbacks* pAllocator);
 
 std::vector<const char*> getRequiredExtensions();
+VulkanQueueFamilyIndices findQueueFamilies(VulkanInstance *instance, VkPhysicalDevice device);
+bool isValideDevice(VulkanInstance *instance, VkPhysicalDevice device);
+
+bool checkDeviceExtensionSupport(VkPhysicalDevice device, std::vector<const char *> deviceExtensions);
+
+bool checkValidationLayerSupport(std::vector<const char *> layer);
 
 static const char* getVulkanResult(VkResult code)
 {

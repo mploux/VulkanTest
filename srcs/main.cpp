@@ -9,7 +9,6 @@
 #include <cstring>
 #include "game.h"
 
-#include "vulkan_system/validation_layers.h"
 #include "vulkan_system/utils.h"
 
 using namespace std;
@@ -30,10 +29,9 @@ bool loop(GLFWwindow *win)
 int main()
 {
 	GLFWwindow	*window = createWindow("Vulkan test", 1280, 720);
-	Game game = Game();
-
+	Game *game = new Game(window);
 	while(!glfwWindowShouldClose(window) && loop(window));
-
+	delete game;
 	glfwDestroyWindow(window);
 	glfwTerminate();
 	return 0;

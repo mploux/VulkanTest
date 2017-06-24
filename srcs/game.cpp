@@ -4,12 +4,19 @@
 
 #include "game.h"
 
-Game::Game()
+Game::Game(GLFWwindow *window)
 {
-	ValidationLayers vulkan_layers = ValidationLayers();
-	vulkan_layers.addLayer("VK_LAYER_LUNARG_standard_validation");
+	std::vector<const char *> vulkanValidationLayers = {};
+	vulkanValidationLayers.push_back("VK_LAYER_LUNARG_standard_validation");
 
-	m_vulkan = new VulkanInstance(vulkan_layers);
+	std::vector<const char *> vulkanDeviceExtensions = {};
+	vulkanDeviceExtensions.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
+
+	m_vulkan = new VulkanInstance(vulkanValidationLayers, vulkanDeviceExtensions);
+	m_vulkan->initDebugCallbacks();
+	m_vulkan->initWindowSurface(window);
+	m_vulkan->initPhysicalDevices();
+	m_vulkan->createLogicalDevices(1.0);
 }
 
 Game::~Game()
