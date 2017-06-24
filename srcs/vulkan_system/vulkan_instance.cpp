@@ -37,7 +37,7 @@ void VulkanInstance::init()
 		std::cout << "YOLO    " << static_cast<uint32_t>(m_layers.getLayers().size()) << std::endl;
 		std::cout << "YOLO    " << m_layers.getLayers()[0] << std::endl;
 
-		instanceInfo.enabledLayerCount = m_layers.getLayers().size();
+		instanceInfo.enabledLayerCount = static_cast<uint32_t>(m_layers.getLayers().size());
 		instanceInfo.ppEnabledLayerNames = m_layers.getLayers().data();
 	}
 	else
@@ -46,7 +46,7 @@ void VulkanInstance::init()
 	VkResult res = vkCreateInstance(&instanceInfo, nullptr, &m_instance);
 	if (res != VK_SUCCESS)
 	{
-		std::cerr << "ERROR: " << res << std::endl;
+		std::cerr << "ERROR: " << getVulkanResult(res) << std::endl;
 		throw std::runtime_error("Failed to create vulkan instance !");
 	}
 }
