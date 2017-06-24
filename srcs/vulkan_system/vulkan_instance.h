@@ -30,6 +30,12 @@ private:
 	VkQueue							m_graphicsQueue;
 	VkQueue							m_presentQueue;
 
+	VkSwapchainKHR					m_swapChain;
+	std::vector<VkImage>			m_swapChainImages;
+	VkFormat						m_swapChainImageFormat;
+	VkExtent2D						m_swapChainExtent;
+	std::vector<VkImageView> 		m_swapChainImageViews;
+
 	std::vector<const char *>		m_validationLayers;
 	std::vector<const char *> 		m_deviceExtensions;
 
@@ -41,6 +47,9 @@ public:
 	void initWindowSurface(GLFWwindow *window);
 	void initPhysicalDevices();
 	void createLogicalDevices(float priority);
+	void createSwapChain();
+	void createImageViews();
+	void createGraphicsPipeline();
 
 	inline VkInstance getInstance() { return (m_instance); }
 	inline VkSurfaceKHR getSurface() { return (m_surface); }

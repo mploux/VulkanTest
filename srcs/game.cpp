@@ -17,6 +17,8 @@ Game::Game(GLFWwindow *window)
 	m_vulkan->initWindowSurface(window);
 	m_vulkan->initPhysicalDevices();
 	m_vulkan->createLogicalDevices(1.0);
+	m_vulkan->createSwapChain();
+	m_vulkan->createImageViews();
 }
 
 Game::~Game()

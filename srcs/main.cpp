@@ -20,17 +20,16 @@ GLFWwindow *createWindow(string title, int width, int height)
 	return (glfwCreateWindow(width, height, title.c_str(), NULL, NULL));
 }
 
-bool loop(GLFWwindow *win)
-{
-	glfwPollEvents();
-	return (true);
-}
-
 int main()
 {
 	GLFWwindow	*window = createWindow("Vulkan test", 1280, 720);
 	Game *game = new Game(window);
-	while(!glfwWindowShouldClose(window) && loop(window));
+	while(!glfwWindowShouldClose(window))
+	{
+		game->update();
+		game->render();
+		glfwPollEvents();
+	}
 	delete game;
 	glfwDestroyWindow(window);
 	glfwTerminate();
