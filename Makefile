@@ -2,6 +2,7 @@ NAME = VulkanTest
 CC = g++
 FILES =\
 vulkan_system/validation_layers.cpp\
+vulkan_system/utils.cpp\
 vulkan_system/vulkan_instance.cpp\
 game.cpp\
 main.cpp
@@ -17,7 +18,7 @@ VULKAN_SDK_LIBS = $(VULKAN_SDK_PATH)/lib
 DEPS = -L $(VULKAN_SDK_LIBS)
 INCLUDES = -I includes/ -I $(VULKAN_SDK_INCLUDES)
 
-CXXFLAGS = -std=c++11 -D DEBUG
+CXXFLAGS = -std=c++11 -D DEBUG -g
 FLAGS = $(CXXFLAGS) $(INCLUDES)
 
 LDFLAGS = $(DEPS) -lvulkan `pkg-config --static --libs glfw3`

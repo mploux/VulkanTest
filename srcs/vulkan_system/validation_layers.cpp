@@ -5,14 +5,10 @@
 #include "validation_layers.h"
 
 ValidationLayers::ValidationLayers()
-{
-
-}
+{}
 
 ValidationLayers::~ValidationLayers()
-{
-
-}
+{}
 
 bool ValidationLayers::checkValidationLayerSupport()
 {
@@ -26,29 +22,16 @@ bool ValidationLayers::checkValidationLayerSupport()
 	{
 		bool layerFound = false;
 		for (const auto& layerProperties : availableLayers)
+		{
+			std::cout << layerName << "     " << layerProperties.layerName << std::endl;
 			if (strcmp(layerName, layerProperties.layerName) == 0)
 			{
 				layerFound = true;
 				break;
 			}
+		}
 		if (!layerFound)
 			return false;
 	}
 	return true;
-}
-
-std::vector<const char*> ValidationLayers::getRequiredExtensions()
-{
-	std::vector<const char*>	result;
-	unsigned int				glfwExtensionCount = 0;
-	const char					**glfwExtensions;
-
-	glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
-	for (unsigned int i = 0; i < glfwExtensionCount; i++)
-	{
-		result.push_back(glfwExtensions[i]);
-	}
-	if (ENABLE_VALIDATION_LAYERS)
-		result.push_back(VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
-	return result;
 }

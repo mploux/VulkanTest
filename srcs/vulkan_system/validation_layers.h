@@ -29,7 +29,6 @@ public:
 	~ValidationLayers();
 
 	bool						checkValidationLayerSupport();
-	std::vector<const char*>	getRequiredExtensions();
 
 	inline void addLayer(const char* layer) { m_layers.push_back(layer); }
 	inline std::vector<const char*> getLayers() { return (m_layers); }

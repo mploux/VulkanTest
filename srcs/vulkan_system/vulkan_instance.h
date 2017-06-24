@@ -7,12 +7,17 @@
 #include <vulkan/vulkan.h>
 #include <GLFW/glfw3.h>
 #include "validation_layers.h"
+#include "utils.h"
 
 class VulkanInstance
 {
 private:
-	VkInstance			m_instance;
-	ValidationLayers	m_layers;
+	VkInstance					m_instance;
+	VkDebugReportCallbackEXT	m_callback;
+	ValidationLayers			m_layers;
+
+	void init();
+	void initDebugCallbacks();
 
 public:
 	VulkanInstance(ValidationLayers layers);

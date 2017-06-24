@@ -6,17 +6,33 @@
 
 #include <cstdint>
 #include <vulkan/vulkan.h>
+#include <GLFW/glfw3.h>
 #include <vector>
 #include <iostream>
 
-void printVulkanExtensions()
-{
-	uint32_t extensionCount = 0;
+#include "validation_layers.h"
 
-	vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
-	std::vector<VkExtensionProperties> extensions(extensionCount);
-	vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, extensions.data());
-	std::cout << "available extensions:" << std::endl;
-	for (const auto& extension : extensions)
-		std::cout << "\t" << extension.extensionName << std::endl;
+static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
+	VkDebugReportFlagsEXT flags,
+	VkDebugReportObjectTypeEXT objType,
+	uint64_t obj, size_t location, int32_t code,
+	const char* layerPrefix, const char* msg, void* userData)
+{
+	std::cerr << "Vulkan validation layer: " << msg << std::endl;
+	return VK_FALSE;
 }
+
+void printVulkanExtensions();
+
+VkResult CreateDebugReportCallbackEXT(
+	VkInstance instance,
+	const VkDebugReportCallbackCreateInfoEXT* pCreateInfo,
+	const VkAllocationCallbacks* pAllocator,
+	VkDebugReportCallbackEXT* pCallback);
+
+void DestroyDebugReportCallbackEXT(
+	VkInstance instance,
+	VkDebugReportCallbackEXT callback,
+	const VkAllocationCallbacks* pAllocator);
+
+std::vector<const char*> getRequiredExtensions();
