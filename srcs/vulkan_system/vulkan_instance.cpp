@@ -4,28 +4,28 @@
 
 #include "vulkan_instance.h"
 
-VulkanInstance::VulkanInstance(std::vector<const char *> layers, std::vector<const char *> extension):
-		m_validationLayers {layers},
+VulkanInstance::VulkanInstance(std::vector<const char *> extension):
 		m_deviceExtensions {extension},
 		m_physicalDevice {VK_NULL_HANDLE}
 {
 	if (ENABLE_VALIDATION_LAYERS && !checkValidationLayerSupport(m_validationLayers))
 		throw std::runtime_error("Vulkan validation layers requested, but not available !");
 
-	VkApplicationInfo appInfo;
+	VkApplicationInfo appInfo = {};
 	appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-	appInfo.pApplicationName = "Yeay title";
+	appInfo.pApplicationName = "VulkanTest";
 	appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
-	appInfo.pEngineName = "Whops no engine for the moment";
+	appInfo.pEngineName = "No Engine";
 	appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
 	appInfo.apiVersion = VK_API_VERSION_1_0;
 
-	VkInstanceCreateInfo instanceInfo;
 	std::vector<const char *> extensions = getRequiredExtensions();
+	VkInstanceCreateInfo instanceInfo = {};
 	instanceInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
 	instanceInfo.pApplicationInfo = &appInfo;
 	instanceInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
 	instanceInfo.ppEnabledExtensionNames = extensions.data();
+	instanceInfo.flags = 0;
 
 	if (ENABLE_VALIDATION_LAYERS)
 	{
@@ -51,7 +51,7 @@ void VulkanInstance::initDebugCallbacks()
 	if (!ENABLE_VALIDATION_LAYERS)
 		return;
 
-	VkDebugReportCallbackCreateInfoEXT debugInfo;
+	VkDebugReportCallbackCreateInfoEXT debugInfo = {};;
 	debugInfo.sType = VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT;
 	debugInfo.flags = VK_DEBUG_REPORT_ERROR_BIT_EXT | VK_DEBUG_REPORT_WARNING_BIT_EXT;
 	debugInfo.pfnCallback = debugCallback;
@@ -542,5 +542,5 @@ VulkanInstance::~VulkanInstance()
 	vkDestroySurfaceKHR(m_instance, m_surface, nullptr);
 	vkDestroyInstance(m_instance, nullptr);
 	DestroyDebugReportCallbackEXT(m_instance, m_callback, nullptr);
-	//vkDestroyInstance(m_instance, nullptr); // This thing SEGVs. I'm not sure why, I'l found out later.
+	vkDestroyInstance(m_instance, nullptr); // This thing SEGVs. I'm not sure why, I'l found out later.
 }

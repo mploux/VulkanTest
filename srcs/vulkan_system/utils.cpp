@@ -206,6 +206,7 @@ bool checkValidationLayerSupport(std::vector<const char *> layers)
 			if (strcmp(layerName, layerProperties.layerName) == 0)
 			{
 				layerFound = true;
+				break;
 			}
 		}
 		if (!layerFound)

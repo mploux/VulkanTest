@@ -20,6 +20,10 @@
 class VulkanInstance
 {
 private:
+	const std::vector<const char *> m_validationLayers = {
+		"VK_LAYER_LUNARG_standard_validation"
+	};
+
 	VkInstance						m_instance;
 	VkDebugReportCallbackEXT		m_callback;
 	VkSurfaceKHR					m_surface;
@@ -47,11 +51,11 @@ private:
 	VkSemaphore						m_imageAvailableSemaphore;
 	VkSemaphore						m_renderFinishedSemaphore;
 
-	std::vector<const char *>		m_validationLayers;
+	//std::vector<const char *>		m_validationLayers;
 	std::vector<const char *> 		m_deviceExtensions;
 
 public:
-	VulkanInstance(std::vector<const char *> layers, std::vector<const char *> extensions);
+	VulkanInstance(std::vector<const char *> extensions);
 	~VulkanInstance();
 
 	void initDebugCallbacks();
@@ -73,6 +77,6 @@ public:
 	inline VkPhysicalDevice getPhysicalDevice() { return (m_physicalDevice); }
 	inline VkDevice getDevice() { return (m_device); }
 
-	inline std::vector<const char *> getValidationLayers() { return (m_validationLayers); }
+	inline std::vector<const char *> getValidationLayers() const { return (m_validationLayers); }
 	inline std::vector<const char *> getDeviceExtensions() { return (m_deviceExtensions); }
 };
