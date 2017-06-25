@@ -24,8 +24,14 @@ int main()
 {
 	GLFWwindow	*window = createWindow("Vulkan test", 1280, 720);
 	Game *game = new Game(window);
+
+	double lastTime = glfwGetTime();
 	while(!glfwWindowShouldClose(window))
 	{
+		double currentTime = glfwGetTime();
+		if (currentTime - lastTime > 1000.0 / 60.0)
+		{
+		}
 		game->update();
 		game->render();
 		glfwPollEvents();

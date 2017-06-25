@@ -16,6 +16,7 @@ Game::Game(GLFWwindow *window)
 	m_vulkan->createLogicalDevices(1.0);
 	m_vulkan->createSwapChain();
 	m_vulkan->createRenderPass();
+	m_vulkan->createGraphicsPipeline();
 	m_vulkan->createImageViews();
 	m_vulkan->createFramebuffers();
 	m_vulkan->createCommandPool();
@@ -35,5 +36,5 @@ void Game::update()
 
 void Game::render()
 {
-
+	m_vulkan->drawFrame();
 }

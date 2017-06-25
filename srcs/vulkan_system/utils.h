@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "../cutils.h"
 #include <cstdint>
 #include <vulkan/vulkan.h>
 #include <GLFW/glfw3.h>
@@ -56,6 +57,23 @@ VkShaderModule					createShaderModule(VulkanInstance *instance, const std::vecto
 std::vector<char>				readFile(const std::string &filename);
 
 static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugReportFlagsEXT flags, VkDebugReportObjectTypeEXT objType, uint64_t obj, size_t location, int32_t code, const char* layerPrefix, const char* msg, void* userData) {
-	std::cerr << "validation layer: " << msg << std::endl;
+	switch (flags)
+	{
+		case VK_DEBUG_REPORT_INFORMATION_BIT_EXT:
+			std::cerr << T_RED << "VK INFO(" << code << "): " << T_YEL << msg << T_NRM << std::endl;
+			break;
+		case VK_DEBUG_REPORT_WARNING_BIT_EXT:
+			std::cerr << T_RED << "VK WARNING(" << code << "): " << T_YEL << msg << T_NRM << std::endl;
+			break;
+		case VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT :
+			std::cerr << T_RED << "VK PERF WARNING(" << code << "): " << T_YEL << msg << T_NRM << std::endl;
+			break;
+		case VK_DEBUG_REPORT_ERROR_BIT_EXT :
+			std::cerr << T_RED << "VK ERROR(" << code << "): " << T_YEL << msg << T_NRM << std::endl;
+			break;
+		case VK_DEBUG_REPORT_DEBUG_BIT_EXT :
+			std::cerr << T_RED << "VK DEBUG(" << code << "): " << T_YEL << msg << T_NRM << std::endl;
+			break;
+	}
 	return VK_FALSE;
 }

@@ -86,6 +86,8 @@ SwapChainSupportDetails querySwapChainSupport(VulkanInstance *instance, VkPhysic
 {
 	SwapChainSupportDetails details;
 
+	vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, instance->getSurface(), &details.capabilities);
+
 	uint32_t formatCount;
 	vkGetPhysicalDeviceSurfaceFormatsKHR(device, instance->getSurface(), &formatCount, nullptr);
 	if (formatCount != 0)
@@ -202,7 +204,6 @@ bool checkValidationLayerSupport(std::vector<const char *> layers)
 		bool layerFound = false;
 		for (const auto& layerProperties : availableLayers)
 		{
-			std::cout << layerProperties.layerName << std::endl;
 			if (strcmp(layerName, layerProperties.layerName) == 0)
 			{
 				layerFound = true;
@@ -226,6 +227,7 @@ VkShaderModule createShaderModule(VulkanInstance *instance, const std::vector<ch
 
 	if (vkCreateShaderModule(instance->getDevice(), &shaderInfo, nullptr, &shaderModule) != VK_SUCCESS)
 	    throw std::runtime_error("Vulkan failed to create shader module!");
+	return (shaderModule);
 }
 
 std::vector<char> readFile(const std::string &filename)
