@@ -17,7 +17,7 @@ VULKAN_SDK_LIBS = $(VULKAN_SDK_PATH)/lib
 DEPS = -L $(VULKAN_SDK_LIBS)
 INCLUDES = -I includes/ -I $(VULKAN_SDK_INCLUDES)
 
-CXXFLAGS = -std=c++11 -D DEBUG -g
+CXXFLAGS = -std=c++11 -g -D DEBUG
 FLAGS = $(CXXFLAGS) $(INCLUDES)
 
 LDFLAGS = $(DEPS) -lvulkan `pkg-config --static --libs glfw3`

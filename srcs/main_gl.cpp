@@ -2,14 +2,10 @@
 // Created by marc on 21/06/17.
 //
 
-#define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
 #include <iostream>
 #include <cstring>
-#include "game.h"
-
-#include "vulkan_system/utils.h"
 
 using namespace std;
 
@@ -20,11 +16,20 @@ GLFWwindow *createWindow(string title, int width, int height)
 	return (glfwCreateWindow(width, height, title.c_str(), NULL, NULL));
 }
 
+void render()
+{
+	glClear(GL_COLOR_BUFFER_BIT);
+	// glBegin(GL_TRIANGLES);
+	// 	glVertex2f(-0.5, -0.5);
+	// 	glVertex2f(0.0, 0.5);
+	// 	glVertex2f(0.5, -0.5);
+	// glEnd();
+}
+
 int main()
 {
 	GLFWwindow	*window = createWindow("Vulkan test", 1280, 720);
-	Game *game = new Game(window, 1280, 720);
-
+	glfwMakeContextCurrent(window);
 	double lastTime = 0;
 	int frames = 0;
 	int ticks = 0;
@@ -33,7 +38,6 @@ int main()
 		double currentTime = glfwGetTime();
 		if (currentTime - lastTime > 1.0 / 60.0)
 		{
-			game->update();
 			ticks++;
 			if (ticks % 60 == 0)
 			{
@@ -42,16 +46,11 @@ int main()
 			}
 			lastTime += 1.0 / 60.0;
 		}
-		else
-		{
-			int width, height;
-			glfwGetWindowSize(window, &width, &height);
-			game->render(width, height);
-			frames++;
-		}
+		render();
+		frames++;
+		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
-	delete game;
 	glfwDestroyWindow(window);
 	glfwTerminate();
 	return 0;

@@ -4,7 +4,8 @@
 
 #include "vulkan_instance.h"
 
-VulkanInstance::VulkanInstance(std::vector<const char *> extension):
+VulkanInstance::VulkanInstance(std::vector<const char *> layers, std::vector<const char *> extension):
+		m_validationLayers {layers},
 		m_deviceExtensions {extension},
 		m_physicalDevice {VK_NULL_HANDLE}
 {
@@ -132,13 +133,13 @@ void VulkanInstance::createLogicalDevices(float priority)
 	vkGetDeviceQueue(m_device, indices.presentFamily, 0, &m_presentQueue);
 }
 
-void VulkanInstance::createSwapChain()
+void VulkanInstance::createSwapChain(uint32_t width, uint32_t height)
 {
 	SwapChainSupportDetails swapChainSupport = querySwapChainSupport(this, m_physicalDevice);
 
 	VkSurfaceFormatKHR surfaceFormat = chooseSwapSurfaceFormat(swapChainSupport.formats);
-	VkPresentModeKHR presentMode = chooseSwapPresentMode(swapChainSupport.presentModes);
-	VkExtent2D extent = chooseSwapExtent(swapChainSupport.capabilities);
+	VkPresentModeKHR presentMode = VK_PRESENT_MODE_IMMEDIATE_KHR;//chooseSwapPresentMode(swapChainSupport.presentModes);
+	VkExtent2D extent = chooseSwapExtent(swapChainSupport.capabilities, width, height);
 
 	uint32_t imageCount = swapChainSupport.capabilities.minImageCount + 1;
 	if (swapChainSupport.capabilities.maxImageCount > 0 && imageCount > swapChainSupport.capabilities.maxImageCount)
@@ -273,13 +274,13 @@ void VulkanInstance::createGraphicsPipeline()
 	viewportState.pScissors = &scissor;
 
 	VkPipelineRasterizationStateCreateInfo rasterizer = {};
-    rasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
-    rasterizer.depthClampEnable = VK_FALSE;
-    rasterizer.rasterizerDiscardEnable = VK_FALSE;
-    rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
-    rasterizer.lineWidth = 1.0f;
-    rasterizer.cullMode = VK_CULL_MODE_BACK_BIT;
-    rasterizer.frontFace = VK_FRONT_FACE_CLOCKWISE;
+	rasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
+	rasterizer.depthClampEnable = VK_FALSE;
+	rasterizer.rasterizerDiscardEnable = VK_FALSE;
+	rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
+	rasterizer.lineWidth = 1.0f;
+	rasterizer.cullMode = VK_CULL_MODE_BACK_BIT;
+	rasterizer.frontFace = VK_FRONT_FACE_CLOCKWISE;
 	rasterizer.depthBiasEnable = VK_FALSE;
 
 	VkPipelineMultisampleStateCreateInfo multisampling = {};
@@ -302,6 +303,16 @@ void VulkanInstance::createGraphicsPipeline()
 	colorBlending.blendConstants[2] = 0.0f;
 	colorBlending.blendConstants[3] = 0.0f;
 
+	VkDynamicState dynamicStates[] = {
+		VK_DYNAMIC_STATE_VIEWPORT,
+		 VK_DYNAMIC_STATE_SCISSOR
+	};
+
+	VkPipelineDynamicStateCreateInfo dynamicState = {};
+	dynamicState.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+	dynamicState.dynamicStateCount = 2;
+	dynamicState.pDynamicStates = dynamicStates;
+
 	VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
 	pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 	pipelineLayoutInfo.setLayoutCount = 0;
@@ -309,6 +320,7 @@ void VulkanInstance::createGraphicsPipeline()
 
 	if (vkCreatePipelineLayout(m_device, &pipelineLayoutInfo, nullptr, &m_pipelineLayout) != VK_SUCCESS)
 		throw std::runtime_error("Vulkan failed to create pipeline layout!");
+
 
 	VkGraphicsPipelineCreateInfo pipelineInfo = {};
 	pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
@@ -324,6 +336,7 @@ void VulkanInstance::createGraphicsPipeline()
 	pipelineInfo.renderPass = m_renderPass;
 	pipelineInfo.subpass = 0;
 	pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
+	pipelineInfo.pDynamicState = &dynamicState;
 
 	if (vkCreateGraphicsPipelines(m_device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &m_graphicsPipeline) != VK_SUCCESS)
 		throw std::runtime_error("Vulkan failed to create graphics pipeline!");
@@ -440,7 +453,19 @@ void VulkanInstance::createCommandBuffers()
 		renderPassInfo.clearValueCount = 1;
 		renderPassInfo.pClearValues = &clearColor;
 
-		std::cout << "Pipeline: " << m_graphicsPipeline << std::endl;
+		VkViewport viewport = {};
+		viewport.x = 0.0f;
+		viewport.y = 0.0f;
+		viewport.width = (float) m_swapChainExtent.width;
+		viewport.height = (float) m_swapChainExtent.height;
+		viewport.minDepth = 0.0f;
+		viewport.maxDepth = 1.0f;
+		vkCmdSetViewport(m_commandBuffers[i], (uint32_t)0, (uint32_t)1, &viewport);
+
+		VkRect2D scissor = {};
+		scissor.offset = {0, 0};
+		scissor.extent = m_swapChainExtent;
+		vkCmdSetScissor(m_commandBuffers[i], (uint32_t)0, (uint32_t)1, &scissor);
 
 		vkCmdBeginRenderPass(m_commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 		vkCmdBindPipeline(m_commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, m_graphicsPipeline);
@@ -462,10 +487,19 @@ void VulkanInstance::createSemaphores()
 		throw std::runtime_error("failed to create semaphores!");
 }
 
-void VulkanInstance::drawFrame()
+void VulkanInstance::recreateSwapChain(uint32_t width, uint32_t height)
+{
+	cleanupSwapChain();
+	createSwapChain(width, height);
+    createImageViews();
+    createFramebuffers();
+    createCommandBuffers();
+}
+
+void VulkanInstance::drawFrame(uint32_t width, uint32_t height)
 {
 	uint32_t imageIndex;
-    vkAcquireNextImageKHR(m_device, m_swapChain, std::numeric_limits<uint64_t>::max(), m_imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex);
+	vkAcquireNextImageKHR(m_device, m_swapChain, std::numeric_limits<uint64_t>::max(), m_imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex);
 
 	VkSubmitInfo submitInfo = {};
 	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -484,7 +518,7 @@ void VulkanInstance::drawFrame()
 	submitInfo.pSignalSemaphores = signalSemaphores;
 
 	if (vkQueueSubmit(m_graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE) != VK_SUCCESS)
-	    throw std::runtime_error("failed to submit draw command buffer!");
+		throw std::runtime_error("failed to submit draw command buffer!");
 
 	VkPresentInfoKHR presentInfo = {};
 	presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
@@ -498,25 +532,32 @@ void VulkanInstance::drawFrame()
 	presentInfo.pImageIndices = &imageIndex;
 
 	vkQueuePresentKHR(m_presentQueue, &presentInfo);
+	vkQueueWaitIdle(m_presentQueue);
+}
+
+void VulkanInstance::cleanupSwapChain()
+{
+	for (size_t i = 0; i < m_swapChainFramebuffers.size(); i++)
+		vkDestroyFramebuffer(m_device, m_swapChainFramebuffers[i], nullptr);
+	vkFreeCommandBuffers(m_device, m_commandPool, static_cast<uint32_t>(m_commandBuffers.size()), m_commandBuffers.data());
+	vkDestroySwapchainKHR(m_device, m_swapChain, nullptr);
+	for (size_t i = 0; i < m_swapChainImageViews.size(); i++)
+		vkDestroyImageView(m_device, m_swapChainImageViews[i], nullptr);
 }
 
 VulkanInstance::~VulkanInstance()
 {
+	cleanupSwapChain();
+
+	vkDestroyPipeline(m_device, m_graphicsPipeline, nullptr);
+	vkDestroyPipelineLayout(m_device, m_pipelineLayout, nullptr);
+	vkDestroyRenderPass(m_device, m_renderPass, nullptr);
+
 	vkDestroySemaphore(m_device, m_renderFinishedSemaphore, nullptr);
 	vkDestroySemaphore(m_device, m_imageAvailableSemaphore, nullptr);
 	vkDestroyCommandPool(m_device, m_commandPool, nullptr);
-	for (size_t i = 0; i < m_swapChainFramebuffers.size(); i++)
-		vkDestroyFramebuffer(m_device, m_swapChainFramebuffers[i], nullptr);
-	vkDestroyPipeline(m_device, m_graphicsPipeline, nullptr);
-	vkDestroyPipelineLayout(m_device, m_pipelineLayout, nullptr);
-	vkDestroyPipelineLayout(m_device, m_pipelineLayout, nullptr);
-	vkDestroyRenderPass(m_device, m_renderPass, nullptr);
-	for (size_t i = 0; i < m_swapChainImageViews.size(); i++)
-		vkDestroyImageView(m_device, m_swapChainImageViews[i], nullptr);
-	vkDestroySwapchainKHR(m_device, m_swapChain, nullptr);
 	vkDestroyDevice(m_device, nullptr);
 	vkDestroySurfaceKHR(m_instance, m_surface, nullptr);
-	vkDestroyInstance(m_instance, nullptr);
 	DestroyDebugReportCallbackEXT(m_instance, m_callback, nullptr);
-	vkDestroyInstance(m_instance, nullptr); // This thing SEGVs. I'm not sure why, I'l found out later.
+	vkDestroyInstance(m_instance, nullptr);
 }

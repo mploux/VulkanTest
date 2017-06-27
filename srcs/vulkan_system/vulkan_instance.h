@@ -20,10 +20,6 @@
 class VulkanInstance
 {
 private:
-	const std::vector<const char *> m_validationLayers = {
-		"VK_LAYER_LUNARG_standard_validation"
-	};
-
 	VkInstance						m_instance;
 	VkDebugReportCallbackEXT		m_callback;
 	VkSurfaceKHR					m_surface;
@@ -51,18 +47,18 @@ private:
 	VkSemaphore						m_imageAvailableSemaphore;
 	VkSemaphore						m_renderFinishedSemaphore;
 
-	//std::vector<const char *>		m_validationLayers;
+	std::vector<const char *>		m_validationLayers;
 	std::vector<const char *> 		m_deviceExtensions;
 
 public:
-	VulkanInstance(std::vector<const char *> extensions);
+	VulkanInstance(std::vector<const char *> layers, std::vector<const char *> extensions);
 	~VulkanInstance();
 
 	void initDebugCallbacks();
 	void initWindowSurface(GLFWwindow *window);
 	void initPhysicalDevices();
 	void createLogicalDevices(float priority);
-	void createSwapChain();
+	void createSwapChain(uint32_t width, uint32_t height);
 	void createImageViews();
 	void createGraphicsPipeline();
 	void createRenderPass();
@@ -70,7 +66,10 @@ public:
 	void createCommandPool();
 	void createCommandBuffers();
 	void createSemaphores();
-	void drawFrame();
+	void drawFrame(uint32_t width, uint32_t height);
+
+	void recreateSwapChain(uint32_t width, uint32_t height);
+	void cleanupSwapChain();
 
 	inline VkInstance getInstance() { return (m_instance); }
 	inline VkSurfaceKHR getSurface() { return (m_surface); }

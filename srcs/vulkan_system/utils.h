@@ -48,7 +48,7 @@ bool							checkValidationLayerSupport(std::vector<const char *> layer);
 SwapChainSupportDetails			querySwapChainSupport(VulkanInstance *instance, VkPhysicalDevice device);
 VkSurfaceFormatKHR				chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
 VkPresentModeKHR				chooseSwapPresentMode(const std::vector<VkPresentModeKHR> availablePresentModes);
-VkExtent2D						chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
+VkExtent2D						chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities, uint32_t width, uint32_t height);
 
 const char*						getVulkanResult(VkResult code);
 

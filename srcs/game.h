@@ -10,11 +10,12 @@ class Game
 {
 private:
 	VulkanInstance	*m_vulkan;
+	GLFWwindow		*m_window;
 
 public:
-	Game(GLFWwindow *window);
+	Game(GLFWwindow *window, int width, int height);
 	~Game();
 
 	void update();
-	void render();
+	void render(int width, int height);
 };
