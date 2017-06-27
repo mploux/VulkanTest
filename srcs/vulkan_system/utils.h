@@ -50,6 +50,9 @@ VkSurfaceFormatKHR				chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatK
 VkPresentModeKHR				chooseSwapPresentMode(const std::vector<VkPresentModeKHR> availablePresentModes);
 VkExtent2D						chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities, uint32_t width, uint32_t height);
 
+uint32_t						findMemoryType(VkPhysicalDevice m_physicalDevice, uint32_t typeFilter, VkMemoryPropertyFlags properties);
+void 							copyBuffer(VulkanInstance *instance, VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
+
 const char*						getVulkanResult(VkResult code);
 
 VkShaderModule					createShaderModule(VulkanInstance *instance, const std::vector<char>& code);

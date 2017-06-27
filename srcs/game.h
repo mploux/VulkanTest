@@ -12,10 +12,11 @@ private:
 	VulkanInstance	*m_vulkan;
 	GLFWwindow		*m_window;
 
+
 public:
 	Game(GLFWwindow *window, int width, int height);
 	~Game();
 
 	void update();
-	void render(int width, int height);
+	void render();
 };

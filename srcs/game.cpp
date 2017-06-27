@@ -10,8 +10,6 @@ static void onWindowResized(GLFWwindow* window, int width, int height)
 {
 	if (width == 0 || height == 0)
 		return;
-	// VulkanInstance* vulkan = reinterpret_cast<VulkanInstance*>(glfwGetWindowUserPointer(window));
-	// vulkan->recreateSwapChain((uint32_t)width, (uint32_t)height);
 	resizing = true;
 }
 
@@ -35,6 +33,7 @@ Game::Game(GLFWwindow *window, int width, int height):
 	m_vulkan->createImageViews();
 	m_vulkan->createFramebuffers();
 	m_vulkan->createCommandPool();
+	m_vulkan->createVertexBuffer();
 	m_vulkan->createCommandBuffers();
 	m_vulkan->createSemaphores();
 
@@ -49,15 +48,16 @@ Game::~Game()
 
 void Game::update()
 {
-	int width, height;
-	glfwGetWindowSize(m_window, &width, &height);
 	if (resizing)
+	{
+		int width, height;
+		glfwGetWindowSize(m_window, &width, &height);
 		m_vulkan->recreateSwapChain((uint32_t)width, (uint32_t)height);
+	}
 	resizing = false;
 }
 
-void Game::render(int width, int height)
+void Game::render()
 {
-	m_vulkan->drawFrame((uint32_t)width, (uint32_t)height);
-	//vkDeviceWaitIdle(m_vulkan->getDevice());
+	m_vulkan->drawFrame();
 }

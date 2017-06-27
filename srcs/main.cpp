@@ -44,9 +44,7 @@ int main()
 		}
 		else
 		{
-			int width, height;
-			glfwGetWindowSize(window, &width, &height);
-			game->render(width, height);
+			game->render();
 			frames++;
 		}
 		glfwPollEvents();
