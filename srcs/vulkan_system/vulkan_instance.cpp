@@ -474,6 +474,27 @@ void VulkanInstance::createVertexBuffer()
 	vkFreeMemory(m_device, stagingBufferMemory, nullptr);
 }
 
+void VulkanInstance::createIndexBuffer()
+{
+	VkDeviceSize bufferSize = sizeof(m_indices[0]) * m_indices.size();
+
+	VkBuffer stagingBuffer;
+	VkDeviceMemory stagingBufferMemory;
+	createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
+
+	void* data;
+	vkMapMemory(m_device, stagingBufferMemory, 0, bufferSize, 0, &data);
+	memcpy(data, m_indices.data(), (size_t) bufferSize);
+	vkUnmapMemory(m_device, stagingBufferMemory);
+
+	createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_indexBuffer, m_indexBufferMemory);
+
+	copyBuffer(this, stagingBuffer, m_indexBuffer, bufferSize);
+
+	vkDestroyBuffer(m_device, stagingBuffer, nullptr);
+	vkFreeMemory(m_device, stagingBufferMemory, nullptr);
+}
+
 void VulkanInstance::createCommandBuffers()
 {
 	m_commandBuffers.resize(m_swapChainFramebuffers.size());
@@ -528,8 +549,10 @@ void VulkanInstance::createCommandBuffers()
 		VkBuffer vertexBuffers[] = {m_vertexBuffer};
 		VkDeviceSize offsets[] = {0};
 		vkCmdBindVertexBuffers(m_commandBuffers[i], 0, 1, vertexBuffers, offsets);
+		vkCmdBindIndexBuffer(m_commandBuffers[i], m_indexBuffer, 0, VK_INDEX_TYPE_UINT16);
 
-		vkCmdDraw(m_commandBuffers[i], 3, 1, 0, 0); // vertexCount, instanceCount, firstVertex, firstInstance
+		// vkCmdDraw(m_commandBuffers[i], 3, 1, 0, 0); // vertexCount, instanceCount, firstVertex, firstInstance
+		vkCmdDrawIndexed(m_commandBuffers[i], static_cast<uint32_t>(m_indices.size()), 1, 0, 0, 0);
 		vkCmdEndRenderPass(m_commandBuffers[i]);
 
 		if (vkEndCommandBuffer(m_commandBuffers[i]) != VK_SUCCESS)
@@ -611,6 +634,8 @@ VulkanInstance::~VulkanInstance()
 
 	cleanupSwapChain();
 
+	vkDestroyBuffer(m_device, m_indexBuffer, nullptr);
+	vkFreeMemory(m_device, m_indexBufferMemory, nullptr);
 
 	vkDestroyBuffer(m_device, m_vertexBuffer, nullptr);
 	vkFreeMemory(m_device, m_vertexBufferMemory, nullptr);

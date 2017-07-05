@@ -34,6 +34,7 @@ Game::Game(GLFWwindow *window, int width, int height):
 	m_vulkan->createFramebuffers();
 	m_vulkan->createCommandPool();
 	m_vulkan->createVertexBuffer();
+	m_vulkan->createIndexBuffer();
 	m_vulkan->createCommandBuffers();
 	m_vulkan->createSemaphores();
 
