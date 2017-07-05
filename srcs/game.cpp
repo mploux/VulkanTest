@@ -29,12 +29,16 @@ Game::Game(GLFWwindow *window, int width, int height):
 	m_vulkan->createLogicalDevices(1.0);
 	m_vulkan->createSwapChain((uint32_t)width, (uint32_t)height);
 	m_vulkan->createRenderPass();
+	m_vulkan->createDescriptorSetLayout();
 	m_vulkan->createGraphicsPipeline();
 	m_vulkan->createImageViews();
 	m_vulkan->createFramebuffers();
 	m_vulkan->createCommandPool();
 	m_vulkan->createVertexBuffer();
 	m_vulkan->createIndexBuffer();
+	m_vulkan->createUniformBuffer();
+	m_vulkan->createDescriptorPool();
+	m_vulkan->createDescriptorSet();
 	m_vulkan->createCommandBuffers();
 	m_vulkan->createSemaphores();
 
@@ -56,6 +60,7 @@ void Game::update()
 		m_vulkan->recreateSwapChain((uint32_t)width, (uint32_t)height);
 	}
 	resizing = false;
+	m_vulkan->updateUniformBuffer();
 }
 
 void Game::render()

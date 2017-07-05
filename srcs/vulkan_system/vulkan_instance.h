@@ -15,12 +15,18 @@
 #include <glm/glm.hpp>
 #include <set>
 #include <array>
+#define GLM_FORCE_RADIANS
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 #include "utils.h"
 
 class VulkanInstance
 {
 private:
+	std::vector<const char *>		m_validationLayers;
+	std::vector<const char *> 		m_deviceExtensions;
+
 	VkInstance						m_instance;
 	VkDebugReportCallbackEXT		m_callback;
 	VkSurfaceKHR					m_surface;
@@ -43,22 +49,33 @@ private:
 
 	VkRenderPass					m_renderPass;
 	VkPipeline						m_graphicsPipeline;
+	VkDescriptorSetLayout			m_descriptorSetLayout;
 	VkPipelineLayout				m_pipelineLayout;
 
 	VkSemaphore						m_imageAvailableSemaphore;
 	VkSemaphore						m_renderFinishedSemaphore;
-
-	std::vector<const char *>		m_validationLayers;
-	std::vector<const char *> 		m_deviceExtensions;
 
 	VkBuffer						m_vertexBuffer;
 	VkDeviceMemory					m_vertexBufferMemory;
 	VkBuffer						m_indexBuffer;
 	VkDeviceMemory					m_indexBufferMemory;
 
+	VkBuffer						m_uniformBuffer;
+	VkDeviceMemory					m_uniformBufferMemory;
+
+	VkDescriptorPool				m_descriptorPool;
+	VkDescriptorSet					m_descriptorSet;
+
+	typedef struct	_UniformBufferObject
+	{
+		glm::mat4 model;
+		glm::mat4 view;
+		glm::mat4 proj;
+	}				UniformBufferObject;
+
 	typedef struct	_Vertex
 	{
-		glm::vec2 pos;
+		glm::vec3 pos;
 		glm::vec3 color;
 
 		static VkVertexInputBindingDescription getBindingDescription()
@@ -85,7 +102,7 @@ private:
 			*/
 			attributeDescriptions[0].binding = 0;
 			attributeDescriptions[0].location = 0;
-			attributeDescriptions[0].format = VK_FORMAT_R32G32_SFLOAT;
+			attributeDescriptions[0].format = VK_FORMAT_R32G32B32_SFLOAT;
 			attributeDescriptions[0].offset = offsetof(Vertex, pos);
 
 			attributeDescriptions[1].binding = 0;
@@ -97,15 +114,20 @@ private:
 	}				Vertex;
 
 	const std::vector<Vertex> m_vertices = {
-		{{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
-		{{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
-		{{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
-		{{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}}
+		{{-0.5f, 0, -0.5f}, {1.0f, 0.0f, 0.0f}},	//0
+		{{0.5f, 0, -0.5f}, {0.0f, 1.0f, 0.0f}},//1
+		{{0.5f, 0, 0.5f}, {0.0f, 0.0f, 1.0f}},//2
+		{{-0.5f, 0, 0.5f}, {1.0f, 0.0f, 1.0f}},//3
+		{{0, 1, 0}, {1.0f, 1.0f, 1.0f}}//4
 	};
 
 	const std::vector<uint16_t> m_indices = {
 		0, 1, 2,
-		2, 3, 0
+		2, 3, 0,
+		0, 1, 4,
+		1, 2, 4,
+		2, 3, 4,
+		3, 0, 4
 	};
 
 public:
@@ -118,6 +140,7 @@ public:
 	void createLogicalDevices(float priority);
 	void createSwapChain(uint32_t width, uint32_t height);
 	void createImageViews();
+	void createDescriptorSetLayout();
 	void createGraphicsPipeline();
 	void createRenderPass();
 	void createFramebuffers();
@@ -125,8 +148,13 @@ public:
 	void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
 	void createIndexBuffer();
 	void createVertexBuffer();
+	void createUniformBuffer();
+	void createDescriptorPool();
+	void createDescriptorSet();
 	void createCommandBuffers();
 	void createSemaphores();
+
+	void updateUniformBuffer();
 	void drawFrame();
 
 	void recreateSwapChain(uint32_t width, uint32_t height);
