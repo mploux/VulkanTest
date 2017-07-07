@@ -12,7 +12,6 @@
 
 #include <vulkan/vulkan.h>
 #include <GLFW/glfw3.h>
-#include <glm/glm.hpp>
 #include <set>
 #include <array>
 #define GLM_FORCE_RADIANS
@@ -46,6 +45,10 @@ private:
 
 	VkCommandPool 					m_commandPool;
 	std::vector<VkCommandBuffer> 	m_commandBuffers;
+
+	VkImage							m_depthImage;
+	VkDeviceMemory					m_depthImageMemory;
+	VkImageView						m_depthImageView;
 
 	VkRenderPass					m_renderPass;
 	VkPipeline						m_graphicsPipeline;
@@ -114,11 +117,11 @@ private:
 	}				Vertex;
 
 	const std::vector<Vertex> m_vertices = {
-		{{-0.5f, 0, -0.5f}, {1.0f, 0.0f, 0.0f}},	//0
-		{{0.5f, 0, -0.5f}, {0.0f, 1.0f, 0.0f}},//1
-		{{0.5f, 0, 0.5f}, {0.0f, 0.0f, 1.0f}},//2
-		{{-0.5f, 0, 0.5f}, {1.0f, 0.0f, 1.0f}},//3
-		{{0, 1, 0}, {1.0f, 1.0f, 1.0f}}//4
+		{{-0.5f, 0, -0.5f}, {1.0f, 0.0f, 0.0f}},
+		{{0.5f, 0, -0.5f}, {0.0f, 1.0f, 0.0f}},
+		{{0.5f, 0, 0.5f}, {0.0f, 0.0f, 1.0f}},
+		{{-0.5f, 0, 0.5f}, {1.0f, 0.0f, 1.0f}},
+		{{0, 1, 0}, {1.0f, 1.0f, 1.0f}}
 	};
 
 	const std::vector<uint16_t> m_indices = {
@@ -129,6 +132,24 @@ private:
 		2, 3, 4,
 		3, 0, 4
 	};
+
+	// const std::vector<Vertex> m_vertices = {
+	// 	{{-0.5f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}},
+	// 	{{0.5f, -0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}},
+	// 	{{0.5f, 0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}},
+	// 	{{-0.5f, 0.5f, 0.0f}, {1.0f, 1.0f, 1.0f}},
+	//
+	// 	{{-0.5f, -0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
+	// 	{{0.5f, -0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
+	// 	{{0.5f, 0.5f, -0.5f}, {0.0f, 0.0f, 1.0f}},
+	// 	{{-0.5f, 0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}}
+	// };
+	//
+	// const std::vector<uint16_t> m_indices = {
+	// 	0, 1, 2, 2, 3, 0,
+	// 	4, 5, 6, 6, 7, 4
+	// };
+
 
 public:
 	VulkanInstance(std::vector<const char *> layers, std::vector<const char *> extensions);
@@ -145,6 +166,8 @@ public:
 	void createRenderPass();
 	void createFramebuffers();
 	void createCommandPool();
+	void createDepthResources();
+    void createTextureImage();
 	void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
 	void createIndexBuffer();
 	void createVertexBuffer();
@@ -159,6 +182,7 @@ public:
 
 	void recreateSwapChain(uint32_t width, uint32_t height);
 	void cleanupSwapChain();
+
 
 	inline VkInstance getInstance() { return (m_instance); }
 	inline VkSurfaceKHR getSurface() { return (m_surface); }

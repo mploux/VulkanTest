@@ -344,7 +344,6 @@ void VulkanInstance::createGraphicsPipeline()
 	if (vkCreatePipelineLayout(m_device, &pipelineLayoutInfo, nullptr, &m_pipelineLayout) != VK_SUCCESS)
 		throw std::runtime_error("Vulkan failed to create pipeline layout!");
 
-
 	VkGraphicsPipelineCreateInfo pipelineInfo = {};
 	pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
 	pipelineInfo.stageCount = 2;
@@ -442,6 +441,11 @@ void VulkanInstance::createCommandPool()
 
 	if (vkCreateCommandPool(m_device, &poolInfo, nullptr, &m_commandPool) != VK_SUCCESS)
 		throw std::runtime_error("Vukan failed to create command pool!");
+}
+
+void VulkanInstance::createDepthResources()
+{
+
 }
 
 void VulkanInstance::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer &buffer, VkDeviceMemory &bufferMemory)
@@ -701,7 +705,7 @@ void VulkanInstance::drawFrame()
 	presentInfo.pImageIndices = &imageIndex;
 
 	vkQueuePresentKHR(m_presentQueue, &presentInfo);
-	vkQueueWaitIdle(m_presentQueue);
+	// vkQueueWaitIdle(m_presentQueue);
 }
 
 void VulkanInstance::cleanupSwapChain()
