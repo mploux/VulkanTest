@@ -445,7 +445,7 @@ void VulkanInstance::createCommandPool()
 
 void VulkanInstance::createDepthResources()
 {
-
+	VkFormat depthFormat = findDepthFormat(this);
 }
 
 void VulkanInstance::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer &buffer, VkDeviceMemory &bufferMemory)

@@ -9,8 +9,6 @@
 #include <cstring>
 #include "game.h"
 
-#include "vulkan_system/utils.h"
-
 using namespace std;
 
 GLFWwindow *createWindow(string title, int width, int height)
@@ -47,6 +45,8 @@ int main()
 			game->render();
 			frames++;
 		}
+		if (glfwGetKey(window, GLFW_KEY_ESCAPE))
+			break;
 		glfwPollEvents();
 	}
 	delete game;

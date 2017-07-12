@@ -4,7 +4,8 @@
 
 #pragma once
 
-#include "vulkan_system/vulkan_instance.h"
+#include "vulkan_instance.h"
+#include "vulkan_utils.h"
 
 class Game
 {

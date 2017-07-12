@@ -1,7 +1,7 @@
 NAME = VulkanTest
 CC = g++
 FILES =\
-vulkan_system/vulkan_utils.cpp\
+vulkan_system/utils.cpp\
 vulkan_system/vulkan_instance.cpp\
 game.cpp\
 main.cpp
@@ -17,7 +17,7 @@ VULKAN_SDK_LIBS = $(VULKAN_SDK_PATH)/lib
 STB_PATH = ~/libs/stb
 
 DEPS = -L $(VULKAN_SDK_LIBS)
-INCLUDES = -I includes/ -I $(VULKAN_SDK_INCLUDES)
+INCLUDES = -I includes/ -I $(VULKAN_SDK_INCLUDES) -I $(STB_PATH)
 
 CXXFLAGS = -std=c++11
 FLAGS = $(CXXFLAGS) $(INCLUDES)

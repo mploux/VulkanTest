@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "../cutils.h"
+#include "cutils.h"
 #include <cstdint>
 #include <vulkan/vulkan.h>
 #include <GLFW/glfw3.h>
@@ -56,6 +56,11 @@ void 							copyBuffer(VulkanInstance *instance, VkBuffer srcBuffer, VkBuffer ds
 const char*						getVulkanResult(VkResult code);
 
 VkShaderModule					createShaderModule(VulkanInstance *instance, const std::vector<char>& code);
+
+VkFormat						findSupportedFormat(VulkanInstance *instance, const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
+VkFormat						findDepthFormat(VulkanInstance *instance);
+
+bool							hasStencilComponent(VkFormat format);
 
 std::vector<char>				readFile(const std::string &filename);
 
